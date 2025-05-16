@@ -3286,7 +3286,7 @@ requires-dist = [
     { name = "nomad-simulations", marker = "extra == 'plugins'", specifier = "==0.4.0" },
     { name = "pynxtools", extras = ["convert"], marker = "extra == 'plugins'", specifier = "==0.10.4" },
     { name = "setuptools" },
-    { name = "test-plugin", marker = "extra == 'plugins'", git = "https://github.com/ccc3001/plugin_plugin.git" },
+    { name = "test-plugin", marker = "extra == 'plugins'", git = "https://github.com/ccc3001/test_plugin.git" },
 ]
 provides-extras = ["plugins", "jupyter", "dev"]
 
@@ -5893,7 +5893,7 @@ wheels = [
 [[package]]
 name = "test-plugin"
 version = "0.1.0"
-source = { git = "https://github.com/ccc3001/plugin_plugin.git#2e97104a6ce73fdbbd3af4b0f1a4dd0f16178abc" }
+source = { git = "https://github.com/ccc3001/test_plugin.git#2e97104a6ce73fdbbd3af4b0f1a4dd0f16178abc" }
 dependencies = [
     { name = "nomad-lab" },
     { name = "python-magic-bin", marker = "sys_platform == 'win32'" },
