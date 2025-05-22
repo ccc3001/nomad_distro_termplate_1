@@ -46,7 +46,7 @@ plugins = [
   #"nomad-parser-plugins-atomistic>=1.0",
   #"nomad-parser-plugins-workflow>=1.0",
   #"nomad-parser-plugins-database>=1.0",
-  "test-plugin @ git+https://github.com/ccc3001/test_plugin.git@3ae1b00f3b839a966d64d3bd98be6896c598cba7",
+  "test-plugin @ git+https://github.com/ccc3001/test_plugin.git@0.0.1",
 ]
 jupyter = []
 dev = ["nomad-lab[parsing, infrastructure, dev]>=1.3.4"]
