@@ -1,4 +1,27 @@
 services:
+  # keycloak user management
+  keycloak:
+    restart: unless-stopped
+    image: quay.io/keycloak/keycloak:16.1.1
+    container_name: nomad_oasis_keycloak
+    environment:
+      - PROXY_ADDRESS_FORWARDING=true
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=password
+      - KEYCLOAK_FRONTEND_URL=http://localhost/keycloak/auth
+      - KEYCLOAK_IMPORT="/tmp/nomad-realm.json"
+    command:
+      - "-Dkeycloak.import=/tmp/nomad-realm.json -Dkeycloak.migration.strategy=IGNORE_EXISTING"
+    volumes:
+      - keycloak:/opt/jboss/keycloak/standalone/data
+      - ./configs/nomad-realm.json:/tmp/nomad-realm.json
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "--silent", "http://127.0.0.1:9990/health/live" ]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 30s
+
   # broker for celery
   rabbitmq:
     restart: unless-stopped
@@ -68,7 +91,7 @@ services:
   # nomad worker (processing)
   worker:
     restart: unless-stopped
-    image: ghcr.io/fairmat-nfdi/nomad-distro-template:main
+    image: ghcr.io/ccc3001/nomad_distro_termplate_1:main
     platform: linux/amd64
     container_name: nomad_oasis_worker
     environment:
@@ -85,14 +108,14 @@ services:
       mongo:
         condition: service_healthy
     volumes:
-      # - ./configs/nomad.yaml:/app/nomad.yaml
+      - ./configs/nomad.yaml:/app/nomad.yaml
       - ./.volumes/fs:/app/.volumes/fs
     command: python -m celery -A nomad.processing worker -l info -Q celery --max-tasks-per-child 128
 
   # nomad app (api + proxy)
   app:
     restart: unless-stopped
-    image: ghcr.io/fairmat-nfdi/nomad-distro-template:main
+    image: ghcr.io/ccc3001/nomad_distro_termplate_1:main
     platform: linux/amd64
     container_name: nomad_oasis_app
     environment:
@@ -111,10 +134,10 @@ services:
         condition: service_healthy
       mongo:
         condition: service_healthy
-      north:
+      keycloak:
         condition: service_started
     volumes:
-      # - ./configs/nomad.yaml:/app/nomad.yaml
+      - ./configs/nomad.yaml:/app/nomad.yaml
       - ./.volumes/fs:/app/.volumes/fs
     command: ./run.sh
     healthcheck:
@@ -132,7 +155,7 @@ services:
   # nomad remote tools hub (JupyterHUB, e.g. for AI Toolkit)
   north:
     restart: unless-stopped
-    image: ghcr.io/fairmat-nfdi/nomad-distro-template:main
+    image: ghcr.io/ccc3001/nomad_distro_termplate_1:main
     platform: linux/amd64
     container_name: nomad_oasis_north
     environment:
@@ -146,8 +169,13 @@ services:
       NOMAD_RABBITMQ_HOST: rabbitmq
       NOMAD_ELASTIC_HOST: elastic
       NOMAD_MONGO_HOST: mongo
+    depends_on:
+      keycloak:
+        condition: service_started
+      app:
+        condition: service_started
     volumes:
-      # - ./configs/nomad.yaml:/app/nomad.yaml
+      - ./configs/nomad.yaml:/app/nomad.yaml
       - ./.volumes/fs:/app/.volumes/fs
       - /var/run/docker.sock:/var/run/docker.sock
     user: "1000:991"
@@ -168,7 +196,7 @@ services:
   # to enable the logtransfer service run "docker compose --profile with_logtransfer up"
   logtransfer:
     restart: unless-stopped
-    image: ghcr.io/fairmat-nfdi/nomad-distro-template:main
+    image: ghcr.io/ccc3001/nomad_distro_termplate_1:main
     platform: linux/amd64
     container_name: nomad_oasis_logtransfer
     environment:
@@ -181,7 +209,7 @@ services:
       mongo:
         condition: service_healthy
     volumes:
-      # - ./configs/nomad.yaml:/app/nomad.yaml
+      - ./configs/nomad.yaml:/app/nomad.yaml
       - ./.volumes/fs:/app/.volumes/fs
     command: python -m nomad.cli admin run logtransfer
     profiles: ["with_logtransfer"]
@@ -202,18 +230,20 @@ services:
       # - ./ssl:/etc/nginx/ssl:ro
     depends_on:
       app:
-        condition: service_healthy
+        condition: service_started
       worker:
-        condition: service_started # TODO: service_healthy
+        condition: service_started 
       north:
         condition: service_healthy
+      keycloak:
+        condition: service_started
     ports:
       - 80:80
       - 443:443
 
   # jupyterlab image: (this is only used to pull the image, no service is run for this)
   jupyterlab_image:
-    image: ghcr.io/fairmat-nfdi/nomad-distro-template/jupyter:main
+    image: ghcr.io/ccc3001/nomad_distro_termplate_1/jupyter:main
     platform: linux/amd64
     container_name: nomad_jupyter_image
     pull_policy: always
