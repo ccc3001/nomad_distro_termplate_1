@@ -4,21 +4,17 @@ name: Build and publish docker images
 on:
   push:
     branches: ["main"]
-    # Publish semver tags as releases.
-    tags: ["v*.*.*"]
+    tags: ["v*.*.*"] # Publish semver tags as releases
   pull_request:
     branches: ["main"]
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+  workflow_dispatch: # Manual trigger
 
 env:
   REGISTRY: ghcr.io
   UV_VERSION: 0.7
   PYTHON_VERSION: 3.12
   JUPYTER_VERSION: 2025-04-14
-  # If you want to include custom documentation, create a fork of the repo below and link the forked repo here
   NOMAD_DOCS_REPO: https://github.com/FAIRmat-NFDI/nomad-docs.git
-  # If you want to skip the tests for some plugins, add them to the list below
   PLUGIN_TESTS_PLUGINS_TO_SKIP: |
     workflowparsers
     nomad_porous_materials
@@ -37,7 +33,9 @@ permissions:
   id-token: write
 
 jobs:
+  # -------------------
   # Job 1: Update Lock File
+  # -------------------
   update-lockfile:
     name: Update Python Lock File
     runs-on: ubuntu-latest
@@ -59,7 +57,6 @@ jobs:
       - name: Update lock file
         run: uv lock
 
-      # Commits any changes made to the lockfile
       - name: Commit lock file changes
         if: github.ref_type != 'tag'
         run: |
@@ -68,10 +65,12 @@ jobs:
           git add uv.lock
           if [[ `git status --porcelain` ]]; then
             git commit -m "Update lockfile"
-            git push origin -o ci.skip # prevent triggering the pipeline again
+            git push origin -o ci.skip
           fi
 
-  # Job 2: Run unit tests for all of the plugin
+  # -------------------
+  # Job 2: Run plugin unit tests
+  # -------------------
   plugin_unit_tests:
     name: Run plugin unit tests
     needs: update-lockfile
@@ -101,14 +100,15 @@ jobs:
         env:
           PLUGIN_TESTS_CI_NODE_INDEX: ${{ matrix.group }}
         run: |
-          # replace the yaml list with a string, use a `,` to separate the plugins
           PLUGINS_STRING=$(echo "$PLUGIN_TESTS_PLUGINS_TO_SKIP" | tr '\n' ',' | sed 's/,$//')
           uv run \
             --extra plugins \
             --with "nomad-plugin-tests" \
             nomad-plugin-tests --plugins-to-skip "$PLUGINS_STRING"
 
+  # -------------------
   # Job 3: Build and Push Docker Image
+  # -------------------
   build:
     name: Build Docker Image
     runs-on: ubuntu-latest
@@ -117,7 +117,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service: [app, jupyter]
+        # service: [app, jupyter]  # >>> COMMENTED OUT (Jupyter)
+        service: [app]  # Only build app image
 
     steps:
       - uses: actions/checkout@v4
@@ -137,7 +138,8 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ github.repository }}${{ matrix.service == 'jupyter' && '/jupyter' || '' }}
+          # images: ${{ env.REGISTRY }}/${{ github.repository }}${{ matrix.service == 'jupyter' && '/jupyter' || '' }}  # >>> COMMENTED OUT (Jupyter)
+          images: ${{ env.REGISTRY }}/${{ github.repository }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -150,7 +152,8 @@ jobs:
             JUPYTER_VERSION=${{ env.JUPYTER_VERSION }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          target: ${{ matrix.service == 'jupyter' && 'jupyter' || 'final' }}
+          # target: ${{ matrix.service == 'jupyter' && 'jupyter' || 'final' }}  # >>> COMMENTED OUT (Jupyter)
+          target: final
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -161,24 +164,27 @@ jobs:
           FIRST_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
           echo "APP_IMAGE=$FIRST_TAG" >> $GITHUB_ENV
 
-      - name: Set JUPYTER_IMAGE for jupyter service
-        if: matrix.service == 'jupyter'
-        run: |
-          FIRST_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
-          echo "JUPYTER_IMAGE=$FIRST_TAG" >> $GITHUB_ENV
+      # >>> COMMENTED OUT (Jupyter image setup)
+      # - name: Set JUPYTER_IMAGE for jupyter service
+      #   if: matrix.service == 'jupyter'
+      #   run: |
+      #     FIRST_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
+      #     echo "JUPYTER_IMAGE=$FIRST_TAG" >> $GITHUB_ENV
 
     outputs:
       app_image: ${{ env.APP_IMAGE }}
-      jupyter_image: ${{ env.JUPYTER_IMAGE }}
+      # jupyter_image: ${{ env.JUPYTER_IMAGE }}  # >>> COMMENTED OUT (Jupyter)
 
+  # -------------------
   # Job 4: Run example upload tests
+  # -------------------
   example_upload_tests:
     name: Run example upload tests
     needs: build
     runs-on: ubuntu-latest
     env:
       APP_IMAGE: ${{ needs.build.outputs.app_image }}
-      JUPYTER_IMAGE: ${{ needs.build.outputs.jupyter_image }}
+      # JUPYTER_IMAGE: ${{ needs.build.outputs.jupyter_image }}  # >>> COMMENTED OUT (Jupyter)
 
     steps:
       - uses: actions/checkout@v4
@@ -212,33 +218,34 @@ jobs:
       - name: Health check
         run: |
           #!/bin/bash
-          set -e # Exit immediately if a command exits with a non-zero status.
+          set -e
 
-          secs=300                           # Set interval (duration) in seconds.
-          endTime=$(( $(date +%s) + secs )) # Calculate end time.
+          secs=300
+          endTime=$(( $(date +%s) + secs ))
 
           check_app_health() {
               curl -s localhost:8000/-/health > /dev/null
           }
 
-          check_jupyter_health() {
-              curl -s localhost:8888/ > /dev/null
-          }
+          # check_jupyter_health() {
+          #     curl -s localhost:8888/ > /dev/null
+          # }  # >>> COMMENTED OUT (Jupyter)
 
-          while [ $(date +%s) -lt $endTime ]; do  # Loop until interval has elapsed.
-            if check_app_health && check_jupyter_health; then
-                echo "Both App and Jupyter health endpoints are responding correctly."
+          while [ $(date +%s) -lt $endTime ]; do
+            # if check_app_health && check_jupyter_health; then  # >>> COMMENTED OUT (Jupyter)
+            if check_app_health; then
+                echo "App health endpoint is responding correctly."
                 exit 0
             else
-                echo "The App or Jupyter health endpoint is not responding. Retrying in 10 seconds..."
+                echo "App health endpoint is not responding. Retrying in 10 seconds..."
                 sleep 10
             fi
           done
 
-          echo "Timeout reached. The App or Jupyter health endpoint did not respond within 5 minutes."
+          echo "Timeout reached. The App endpoint did not respond within 5 minutes."
           echo "Fetching Docker logs for debugging..."
-          docker logs app  # Output logs from the app container
-          docker logs jupyter  # Output logs from the Jupyter container 
+          docker logs app
+          # docker logs jupyter  # >>> COMMENTED OUT (Jupyter)
           exit 1
 
       - name: Run tests
