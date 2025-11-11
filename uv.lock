@@ -2077,7 +2077,7 @@ requires-dist = [
     { name = "nomad-schema-plugin-run", marker = "extra == 'plugins'", specifier = ">=1.0.1" },
     { name = "nomad-simulations", marker = "extra == 'plugins'", specifier = "==0.5.0" },
     { name = "setuptools" },
-    { name = "test-plugin", marker = "extra == 'plugins'", git = "https://github.com/ccc3001/test_plugin.git?rev=v0.1.2.10" },
+    { name = "test-plugin", marker = "extra == 'plugins'", git = "https://github.com/ccc3001/test_plugin.git?rev=v0.1.2.11" },
 ]
 provides-extras = ["plugins", "jupyter", "dev"]
 
@@ -3797,7 +3797,7 @@ wheels = [
 [[package]]
 name = "test-plugin"
 version = "0.1.0"
-source = { git = "https://github.com/ccc3001/test_plugin.git?rev=v0.1.2.10#b0440bbbb65935376a2a1feb39b3a04cb5e3e228" }
+source = { git = "https://github.com/ccc3001/test_plugin.git?rev=v0.1.2.11#cd92afd73db8a9db33a1e6d1ee5ce90203d76141" }
 dependencies = [
     { name = "nomad-lab" },
     { name = "python-magic-bin", marker = "sys_platform == 'win32'" },
