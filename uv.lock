@@ -200,6 +200,15 @@ wheels = [
 ]
 
 [[package]]
+name = "bachmann-hdf5-plugin"
+version = "0.1.0"
+source = { git = "https://github.com/ccc3001/bachmann_hdf5_plugin.git?rev=v1.0.0#3e140f590ec58b693c517dc45f037388aff45a22" }
+dependencies = [
+    { name = "nomad-lab" },
+    { name = "python-magic-bin", marker = "sys_platform == 'win32'" },
+]
+
+[[package]]
 name = "bagit"
 version = "1.8.1"
 source = { registry = "https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple" }
@@ -2061,15 +2070,16 @@ dev = [
     { name = "nomad-lab", extra = ["dev", "infrastructure", "parsing"] },
 ]
 plugins = [
+    { name = "bachmann-hdf5-plugin" },
     { name = "eelsdbconverter" },
     { name = "nomad-aitoolkit" },
     { name = "nomad-schema-plugin-run" },
     { name = "nomad-simulations" },
-
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "bachmann-hdf5-plugin", marker = "extra == 'plugins'", git = "https://github.com/ccc3001/bachmann_hdf5_plugin.git?rev=v1.0.0" },
     { name = "eelsdbconverter", marker = "extra == 'plugins'", git = "https://github.com/nomad-coe/nomad-parser-eelsdb.git?rev=entry-point" },
     { name = "nomad-aitoolkit", marker = "extra == 'plugins'", git = "https://github.com/FAIRmat-NFDI/nomad-aitoolkit.git?rev=b203f8eb28dc4b6771a39d5c5b7ad3d9d8583ac8" },
     { name = "nomad-lab", extras = ["dev", "infrastructure", "parsing"], marker = "extra == 'dev'", specifier = ">=1.3.4" },
@@ -3791,15 +3801,6 @@ source = { registry = "https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages
 sdist = { url = "https://files.pythonhosted.org/packages/37/72/88311445fd44c455c7d553e61f95412cf89054308a1aa2434ab835075fc5/termcolor-2.5.0.tar.gz", hash = "sha256:998d8d27da6d48442e8e1f016119076b690d962507531df4890fcd2db2ef8a6f", size = 13057, upload-time = "2024-10-06T19:50:04.115Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7f/be/df630c387a0a054815d60be6a97eb4e8f17385d5d6fe660e1c02750062b4/termcolor-2.5.0-py3-none-any.whl", hash = "sha256:37b17b5fc1e604945c2642c872a3764b5d547a48009871aea3edd3afa180afb8", size = 7755, upload-time = "2024-10-06T19:50:02.097Z" },
-]
-
-[[package]]
-name = "test-plugin"
-version = "0.1.0"
-source = { git = "https://github.com/ccc3001/test_plugin.git?rev=v0.1.3.1#c2c4177b5af81e4e2a7190a74c6379c9687c7901" }
-dependencies = [
-    { name = "nomad-lab" },
-    { name = "python-magic-bin", marker = "sys_platform == 'win32'" },
 ]
 
 [[package]]
