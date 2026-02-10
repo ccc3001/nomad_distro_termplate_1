@@ -2077,7 +2077,7 @@ requires-dist = [
     { name = "nomad-schema-plugin-run", marker = "extra == 'plugins'", specifier = ">=1.0.1" },
     { name = "nomad-simulations", marker = "extra == 'plugins'", specifier = "==0.5.0" },
     { name = "setuptools" },
-    { name = "bachmann-hdf5-plugin", marker = "extra == 'plugins'", git = "https://github.com/ccc3001/bachmann_hdf5_plugin.git?rev=v0.1.0.0" },
+    { name = "bachmann-hdf5-plugin", marker = "extra == 'plugins'", git = "https://github.com/ccc3001/bachmann_hdf5_plugin.git?rev=v1.0.0" },
 ]
 provides-extras = ["plugins", "jupyter", "dev"]
 
