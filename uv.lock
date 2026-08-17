@@ -2072,7 +2072,7 @@ requires-dist = [
     { name = "nomad-lab", extras = ["dev", "infrastructure", "parsing"], marker = "extra == 'dev'", specifier = ">=1.3.4" },
     { name = "nomad-lab", extras = ["infrastructure", "parsing"], specifier = ">=1.3.4" },
     { name = "nomad-schema-plugin-run", marker = "extra == 'plugins'", specifier = ">=1.0.1" },
-    { name = "nomad-simulations", marker = "extra == 'plugins'", specifier = "==0.7.0" },
+    { name = "nomad-simulations", marker = "extra == 'plugins'", specifier = "==0.8.0" },
     { name = "setuptools" },
     { name = "test-plugin", marker = "extra == 'plugins'", git = "https://github.com/ccc3001/bachmann_hdf5_plugin.git?rev=v1.3.3" },
 ]
@@ -2216,15 +2216,17 @@ wheels = [
 
 [[package]]
 name = "nomad-simulations"
-version = "0.7.0"
+version = "0.8.0"
 source = { registry = "https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple" }
 dependencies = [
     { name = "matid" },
     { name = "nomad-lab", extra = ["infrastructure"] },
+    { name = "seekpath" },
+    { name = "spglib" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/45/c9/14648d2d2aaa4626c9ec78f407a3915505868a8076883a61c734ac4ad32b/nomad_simulations-0.7.0.tar.gz", hash = "sha256:5056fdbf1997599f6cabcd56b4aad207fd856328812b0983b2a2815976c9994e", size = 1361168, upload-time = "2026-03-25T07:39:14.491Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8e/bc/664e3d73ebfce2533850d7968b7274c2a769ff25450cd904eb1dda532e6c/nomad_simulations-0.8.0.tar.gz", hash = "sha256:5aa7d93f319e8dbfbb195c39f238a0dcb3bd63d093e5d227558c92a0cd6f3e12", size = 1428428, upload-time = "2026-08-13T14:29:13.644Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e3/f4/58c753f6b1945de5957cc1490009544cc1eb562bb8eddcac596af940f442/nomad_simulations-0.7.0-py3-none-any.whl", hash = "sha256:97767e414bdfd11caa21ef505e8bc875d74ad23d3922c2f5a26d428f24d99d2e", size = 234436, upload-time = "2026-03-25T07:39:13.302Z" },
+    { url = "https://files.pythonhosted.org/packages/ec/26/519d07672d270b3ded404482411fae84995f10ad9f4b36db48507de3837c/nomad_simulations-0.8.0-py3-none-any.whl", hash = "sha256:4cdb4e87b174d6555bad40c917a03d46a0d25c35c61c61be00c1a1e100df1826", size = 254815, upload-time = "2026-08-13T14:29:12.351Z" },
 ]
 
 [[package]]
@@ -3509,6 +3511,19 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/e9/06/0449b744892ed22b7e7b9a1994a866e64895363572677a316a9042af1fe5/scipy-1.15.2-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:03205d57a28e18dfd39f0377d5002725bf1f19a46f444108c29bdb246b6c8a11", size = 36872390, upload-time = "2025-02-17T00:32:29.421Z" },
     { url = "https://files.pythonhosted.org/packages/6a/6f/a8ac3cfd9505ec695c1bc35edc034d13afbd2fc1882a7c6b473e280397bb/scipy-1.15.2-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:601881dfb761311045b03114c5fe718a12634e5608c3b403737ae463c9885d53", size = 39700276, upload-time = "2025-02-17T00:32:37.431Z" },
     { url = "https://files.pythonhosted.org/packages/f5/6f/e6e5aff77ea2a48dd96808bb51d7450875af154ee7cbe72188afb0b37929/scipy-1.15.2-cp312-cp312-win_amd64.whl", hash = "sha256:e7c68b6a43259ba0aab737237876e5c2c549a031ddb7abc28c7b47f22e202ded", size = 40942317, upload-time = "2025-02-17T00:32:45.47Z" },
+]
+
+[[package]]
+name = "seekpath"
+version = "2.2.1"
+source = { registry = "https://gitlab.mpcdf.mpg.de/api/v4/projects/2187/packages/pypi/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "spglib" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ee/17/e02d23a1d6806258e0543a2e738808faa2487ac5750c0771224202ca2011/seekpath-2.2.1.tar.gz", hash = "sha256:10906f13e3db5ed511b85ada2c0eba9f90ae764078a21809035561b0116a66a3", size = 44574, upload-time = "2026-01-31T13:01:30.004Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/73/24/0c2ade7551649491b775030799d3cb1283e96699d74704686dd4d4ab5ae2/seekpath-2.2.1-py3-none-any.whl", hash = "sha256:6351c89dd0f58d5d85dba2d63134cd036d57c777baf2bfb9b5b70ff84fa9b8c1", size = 77950, upload-time = "2026-01-31T13:01:28.161Z" },
 ]
 
 [[package]]
